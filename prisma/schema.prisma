@@ -1,0 +1,39 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Team {
+  @@map("teams")
+
+  id Int @id @default(autoincrement())
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+  name String
+
+  homeGames Game[] @relation("homeTeam")
+  awayGames Game[] @relation("awayTeam")
+}
+
+model Game {
+  @@map("games")
+
+  id Int @id @default(autoincrement())
+  createdAt DateTime @default(now()) @map("updated_at")
+  updatedAt DateTime @updatedAt @map("created_at")
+
+  homeTeam Team @relation("homeTeam", fields: [homeTeamId], references: [id])
+  homeTeamId Int @map("home_team_id")
+
+  awayTeam Team @relation("awayTeam", fields: [awayTeamId], references: [id])
+  awayTeamId Int @map("away_team_id")
+  
+  gameTimeAt DateTime @map("game_time_at")
+}
