@@ -16,6 +16,14 @@ if (process.env.NODE_ENV === "production") {
     global.__db = new PrismaClient({
       log: ['query', 'info', 'warn', 'error']
     });
+
+    global.__db.$on('query', (e) => {
+      console.log('--------------------')
+      console.log('Query: ' + e.query)
+      console.log('Params: ' + e.params)
+      console.log('Duration: ' + e.duration + 'ms')
+      console.log('--------------------')
+    })
   }
   db = global.__db;
 }

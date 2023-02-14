@@ -15,8 +15,6 @@ function convertToDate(dateObj): Date {
 export const dateHelpers = {
   renderMonthDay: function(dateObj): string {
     dateObj = convertToDate(dateObj);
-
-    console.log(typeof dateObj);
   
     let returnString = ""
     returnString += dateObj.getMonth() + 1
@@ -36,5 +34,10 @@ export const dateHelpers = {
     returnString += dateObj.getDate()
   
     return returnString;
+  },
+  renderGameTime: function(dateObj): string {
+    dateObj = convertToDate(dateObj);
+
+    return dateObj.toLocaleTimeString('en-US', {hour: 'numeric', minute: 'numeric'});
   }
 }

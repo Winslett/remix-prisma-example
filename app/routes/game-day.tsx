@@ -16,8 +16,6 @@ export const loader = async ({ params }: LoaderArgs) => {
 export default function RosterRoute() {
   const data = useLoaderData<typeof loader>();
 
-  console.log(typeof data.current_date);
-
   return (
     <div>
       <h1 className="text-3xl font-bold underline">Games on {dateHelpers.renderMonthDay(data.current_date)}</h1>

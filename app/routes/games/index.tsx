@@ -11,7 +11,7 @@ import { db } from "~/utils/db.server";
 
 export const loader = async () => {
   return json({
-    gameDays: await db.$queryRaw`SELECT DISTINCT date_trunc('day', game_time_at) AS game_date FROM games ORDER BY game_date;`,
+    gameDays: await db.$queryRaw`SELECT DISTINCT date_trunc('day', game_time_at AT TIME ZONE 'Europe/Rome') AS game_date FROM games ORDER BY game_date;`,
     teams: await db.Team.findMany(),
     gamesList: await db.Game.findMany({
       include: {

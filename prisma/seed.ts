@@ -30,6 +30,8 @@ async function seed() {
   for (i = 0; i < 20; i++) {
     const date = new Date();
     date.setDate(date.getDate() + i);
+    date.setSeconds(0);
+    date.setMilliseconds(0);
 
     const shuffledteams = await getTeams();
     
@@ -37,7 +39,10 @@ async function seed() {
     shuffledteams.forEach((team, index) => {
       gameKey = Math.floor(index / 2);
       if (!daysGames[gameKey]) {
-        daysGames[gameKey] = {gameTimeAt: date};
+        date.setHours(Math.floor((Math.random() * 8) + 14)); // pick a random hour between 2pm and 10pm
+        date.setMinutes(Math.floor((Math.random() * 12)) * 5); // pick a random minute spaced in 5s
+
+        daysGames[gameKey] = {gameTimeAt: new Date(date)};
       }
 
       if (index % 2 == 0) {

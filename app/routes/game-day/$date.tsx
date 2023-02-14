@@ -9,47 +9,33 @@ import {
   useLoaderData,
 } from "@remix-run/react";
 
+import { dateHelpers } from "~/utils/date.helper";
 
 import { db } from "~/utils/db.server";
 
-let renderMonthDay = function(dateObj) {
-  if (typeof dateObj === 'string') {
-    dateObj = new Date(dateObj)
-  }
-
-  let returnString = ""
-  returnString += dateObj.getMonth() + 1
-  returnString += "/"
-  returnString += dateObj.getDate()
-
-  return returnString;
-}
-
-let renderDateforURL = function(dateObj) {
-  if (typeof dateObj === 'string') {
-    dateObj = new Date(dateObj)
-  }
-
-  let returnString = ""
-  returnString += dateObj.getFullYear()
-  returnString += '-'
-  returnString += dateObj.getMonth() + 1
-  returnString += "-"
-  returnString += dateObj.getDate()
-
-  return returnString;
-}
-
 export const loader = async ({ params }: LoaderArgs) => {
-  const current_date = new Date(params.date);
+  flexiDate = new Date(params.date)
+  
+  const queryDate = new Date(flexiDate);
+  const nextDate = new Date(flexiDate.setDate(flexiDate.getDate() + 1))
 
   return json({
+    console.log(queryDate)
     games: await db.Game.findMany({
         where: {
           gameTimeAt: {
-              gte: current_date,
-              lt: new Date(current_date.setDate(current_date.getDate() + 1)),
+              gte: "'" + dateHelpers.renderDateforURL(queryDate) + "' AT TIME ZONE 'Europe/Rome'",
+              lt: "'" + dateHelpers.renderDateforURL(nextDate) + "' AT TIME ZONE 'Europe/Rome'",
           }
+        },
+        orderBy: [
+          {
+            gameTimeAt: 'asc',
+          }
+        ],
+        include: {
+          awayTeam: true,
+          homeTeam: true
         }
       }),
     teams: await db.Team.findMany(),
@@ -65,8 +51,11 @@ export default function RosterIndexRoute() {
       <ul>
        {data.games.map((game) => (
           <li key={game.id}>
-            <Link to={'/game/' + game.id}>{game.awayTeam}</Link>
-            <Link to={'/game/' + game.id}>{game.homeTeam}</Link>
+            <Link to={'/team/' + game.awayTeam.id}>{game.awayTeam.name}</Link>
+            &nbsp;@&nbsp;
+            <Link to={'/team/' + game.homeTeam.id}>{game.homeTeam.name}</Link>
+            &nbsp;-&nbsp;
+            <Link to={'/game/' + game.id}>{dateHelpers.renderGameTime(game.gameTimeAt)}</Link>
           </li>
         ))}
       </ul>
